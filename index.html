@@ -8,9 +8,9 @@
         body { font-family: sans-serif; text-align: center; padding: 50px 20px; background: #ffffff; color: #333; margin: 0; }
         .btn { display: inline-block; padding: 18px 40px; background: #06C755; color: white; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 20px; margin-top: 20px; box-shadow: 0 4px 15px rgba(6,199,85,0.3); }
         
-        /* 案内用ピンク画面（最初は隠す） */
+        /* 案内用オーバーレイ（ピンク） */
         #guide-overlay { 
-            display: none; 
+            display: none; /* 初期は隠す（スクリプトで即座に表示判定） */
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #FFEDF3; color: #C2185B; z-index: 9999; 
             padding-top: 120px; box-sizing: border-box;
@@ -32,44 +32,41 @@
             <p>TikTok内ではお友達登録ができません😭</p>
             <p>右上の<span class="highlight">「...」</span>をタップして<br>
                <span class="highlight">「ブラウザで開く」</span><br>
-               を選択してね😻
+               を選択してね♪
             </p>
-            <div class="close-btn" onclick="closeOverlay()">
-                🐈ブラウザで開いている方はこちら🐈
+            <div class="close-btn" onclick="document.getElementById('guide-overlay').style.display='none'">
+                🐈ブラウザで開いた方はこちら🐈
             </div>
         </div>
     </div>
 
-    <h2>🐈さやかLINE友だち追加🐈</h2>
-    <p>😻下のボタンをタップして登録してくね😻</p>
+    <h2>😻さやかLINE友だち追加😻</h2>
+    <p>下のボタンをタップして登録してね♪</p>
     
     <a href="https://ialoop.net/lineadd?ap=pnHlt5proV" class="btn">LINEで友だち追加</a>
 
     <script>
-        const overlay = document.getElementById('guide-overlay');
-
-        // ピンク画面を閉じる関数
-        function closeOverlay() {
-            overlay.style.display = 'none';
-            // 「ブラウザで開いた」という記憶を保存（24時間有効）
-            localStorage.setItem('opened_in_browser', 'true');
-        }
-
         (function() {
             const ua = navigator.userAgent.toLowerCase();
-            // 過去に「閉じる」を押したか、またはブラウザ移動の目印があるかチェック
-            const isOpenedBefore = localStorage.getItem('opened_in_browser');
-            const isExternal = window.location.search.indexOf('open=external') !== -1;
+            const isAlreadyOpened = window.location.search.indexOf('open=external') !== -1;
+            const overlay = document.getElementById('guide-overlay');
 
-            // TikTokなどのアプリ内ブラウザ判定
-            const isTikTok = ua.indexOf('tiktok') !== -1 || ua.indexOf('tt-jp') !== -1;
-            const isApp = isTikTok || (ua.indexOf('iphone') !== -1 && ua.indexOf('safari') === -1);
-
-            if (isApp && !isOpenedBefore && !isExternal) {
-                // アプリ内かつ、まだ「閉じた」記憶がない場合のみピンク画面を出す
+            // 【重要】目印（?open=external）がない場合は、全ての環境でピンク画面を出す
+            if (!isAlreadyOpened) {
                 overlay.style.display = 'block';
+
+                // Androidの場合のみ、自動遷移を試みる
+                if (ua.indexOf('android') !== -1) {
+                    const separator = window.location.href.indexOf('?') === -1 ? '?' : '&';
+                    const targetUrl = (window.location.href + separator + 'open=external').replace(/https?:\/\//, "");
+                    
+                    // 1秒後に実行（読み込み完了を待つため）
+                    setTimeout(function() {
+                        window.location.href = 'intent://' + targetUrl + '#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end';
+                    }, 500);
+                }
             } else {
-                // それ以外（Safari/Chrome本体や、移動後）は出さない
+                // 目印がある（ブラウザで開き直した）場合は、ピンク画面を絶対に出さない
                 overlay.style.display = 'none';
             }
         })();
