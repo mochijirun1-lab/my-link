@@ -5,31 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>公式LINE案内</title>
     <style>
-        body { margin: 0; padding: 0; background: #FFC0CB; text-align: center; font-family: sans-serif; }
+        body { font-family: sans-serif; text-align: center; padding: 50px 20px; background: #ffffff; color: #333; margin: 0; }
+        .btn { display: inline-block; padding: 18px 40px; background: #06C755; color: white; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 20px; margin-top: 20px; box-shadow: 0 4px 15px rgba(6,199,85,0.3); }
         
-        /* 案内画面を「ピンク」に強制固定 */
+        /* 案内用オーバーレイ（ピンク背景） */
         #guide-overlay { 
+            display: block; 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #FFC0CB !important; /* ★絶対ピンクにする命令 */
-            color: #C2185B; z-index: 9999; padding-top: 100px; 
+            background: #FFEDF3; /* 薄いピンク */
+            color: #C2185B; /* 濃いピンクの文字 */
+            z-index: 1000; 
+            padding-top: 120px; box-sizing: border-box;
         }
-        .btn { display: inline-block; padding: 15px 30px; background: #06C755; color: white; text-decoration: none; border-radius: 30px; font-weight: bold; margin-top: 20px; }
+
+        /* 矢印を右上に絶対固定 */
+        .arrow { 
+            font-size: 70px; 
+            position: absolute; 
+            top: 10px; 
+            right: 30px; 
+            line-height: 1;
+            animation: bounce 1s infinite; 
+        }
+
+        @keyframes bounce { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-15px); } 
+        }
+
+        .instruction { font-size: 19px; line-height: 1.8; padding: 0 25px; font-weight: bold; }
+        .highlight { background: #ffffff; padding: 2px 8px; border-radius: 5px; color: #C2185B; border: 2px solid #C2185B; }
+        .close-btn { margin-top: 40px; color: #888; text-decoration: underline; font-size: 14px; cursor: pointer; padding: 15px; }
     </style>
 </head>
 <body>
 
+    <h2>😻LINE友だち追加😻</h2>
+    <p>下のボタンをタップして登録してください</p>
+    
+    <a href="https://ialoop.net/lineadd?ap=pnHlt5proV" class="btn">LINEで友だち追加</a>
+
     <div id="guide-overlay">
-        <h2 style="font-size: 24px;">【重要なお知らせ】</h2>
-        <p>右上の「...」から<br>「ブラウザで開く」を押してください</p>
-        <div style="font-size: 50px;">↗︎</div>
-        
-        <p onclick="this.parentElement.style.display='none'" style="text-decoration: underline; margin-top: 50px;">
-            [ すでにブラウザで開いている方はここをタップ ]
-        </p>
+        <div class="arrow">↗︎</div>
+        <div class="instruction">
+            <p style="font-size: 24px; margin-bottom: 20px;">【🐈重要🐈】</p>
+            <p>TikTok内では登録ができません</p>
+            <p>右上の<span class="highlight">「...」</span>をタップして<br>
+               <span class="highlight">「ブラウザで開く」</span><br>
+               を選択してください。
+            </p>
+            <div class="close-btn" onclick="document.getElementById('guide-overlay').style.display='none'">
+                すでにブラウザで開いている方はこちら
+            </div>
+        </div>
     </div>
 
-    <h1>公式LINE登録</h1>
-    <a href="https://lin.ee/XXXXXX" class="btn">友だち追加する</a>
+    <script>
+        const ua = navigator.userAgent.toLowerCase();
+        const isTikTok = ua.indexOf('tiktok') !== -1;
+        const isAndroid = ua.indexOf('android') !== -1;
+        const isAlreadyOpened = window.location.search.indexOf('open=external') !== -1;
 
+        if (isTikTok && !isAlreadyOpened) {
+            if (isAndroid) {
+                // Android自動遷移（目印付き）
+                const separator = window.location.href.indexOf('?') === -1 ? '?' : '&';
+                const targetUrl = (window.location.href + separator + 'open=external').replace(/https?:\/\//, "");
+                window.location.href = 'intent://' + targetUrl + '#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end';
+            }
+        } else if (isAlreadyOpened || !isTikTok) {
+            // ブラウザで開いた後は案内を隠す
+            document.getElementById('guide-overlay').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
