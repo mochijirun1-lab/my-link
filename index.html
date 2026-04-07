@@ -3,80 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LINE案内</title>
+    <title>公式LINE案内</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px 20px; background: #ffffff; color: #333; margin: 0; }
-        .btn { display: inline-block; padding: 18px 40px; background: #06C755; color: white; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 20px; margin-top: 20px; box-shadow: 0 4px 15px rgba(6,199,85,0.3); }
+        body { margin: 0; padding: 0; background: #FFC0CB; text-align: center; font-family: sans-serif; }
         
-        /* 案内用オーバーレイ（背景をピンクに変更） */
+        /* 案内画面を「ピンク」に強制固定 */
         #guide-overlay { 
-            display: block; /* 最初は全員に出す */
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #FFEDF3; /* ★薄いピンクに変更 */
-            color: #C2185B; /* ★文字の色を濃いピンクに変更 */
-            z-index: 1000; 
-            padding-top: 80px; box-sizing: border-box;
+            background: #FFC0CB !important; /* ★絶対ピンクにする命令 */
+            color: #C2185B; z-index: 9999; padding-top: 100px; 
         }
-        .arrow { font-size: 50px; position: absolute; top: 10px; right: 20px; animation: bounce 1s infinite; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .instruction { font-size: 18px; line-height: 1.6; padding: 0 20px; }
-        
-        /* 強調文字（濃いピンクに合わせる） */
-        .highlight { 
-            background: #ffffff; /* ★白背景を付けて強調 */
-            padding: 2px 5px;
-            border-radius: 5px;
-            font-weight: bold; 
-            font-size: 22px; 
-        }
-        
-        /* 閉じるボタン（薄いグレーに合わせる） */
-        .close-btn { margin-top: 30px; color: #888; text-decoration: underline; font-size: 14px; cursor: pointer; padding: 10px; }
+        .btn { display: inline-block; padding: 15px 30px; background: #06C755; color: white; text-decoration: none; border-radius: 30px; font-weight: bold; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <h2>😻LINE友だち追加😻</h2>
-    <p>下のボタンをタップして登録してください</p>
-    
-    <a href="https://ialoop.net/lineadd?ap=pnHlt5proV" class="btn">LINEで友だち追加</a>
-
     <div id="guide-overlay">
-        <div class="arrow">↗︎</div>
-        <div class="instruction">
-            <p style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">【😭重要😭】</p>
-            <p>TikTok内ではLINEのお友達登録ができません</p>
-            <p>右上の<span class="highlight">「...」</span>をタップして<br>
-               <span class="highlight">「ブラウザで開く」</span><br>
-               を選択してください🐈
-            </p>
-            <div class="close-btn" onclick="document.getElementById('guide-overlay').style.display='none'">
-                →すでにブラウザで開いている方はこちら←
-            </div>
-        </div>
+        <h2 style="font-size: 24px;">【重要なお知らせ】</h2>
+        <p>右上の「...」から<br>「ブラウザで開く」を押してください</p>
+        <div style="font-size: 50px;">↗︎</div>
+        
+        <p onclick="this.parentElement.style.display='none'" style="text-decoration: underline; margin-top: 50px;">
+            [ すでにブラウザで開いている方はここをタップ ]
+        </p>
     </div>
 
-    <script>
-        const ua = navigator.userAgent.toLowerCase();
-        const isTikTok = ua.indexOf('tiktok') !== -1;
-        const isAndroid = ua.indexOf('android') !== -1;
+    <h1>公式LINE登録</h1>
+    <a href="https://lin.ee/XXXXXX" class="btn">友だち追加する</a>
 
-        // URLに「?open=external」という文字が入っていないかチェック
-        const isAlreadyOpened = window.location.search.indexOf('open=external') !== -1;
-
-        // 1. TikTokアプリ内、かつ、まだ自動遷移を試みていない場合のみ実行
-        if (isTikTok && !isAlreadyOpened) {
-            if (isAndroid) {
-                // 自分自身のURLに「?open=external」を付けてブラウザに飛ばす
-                const separator = window.location.href.indexOf('?') === -1 ? '?' : '&';
-                const targetUrl = (window.location.href + separator + 'open=external').replace(/https?:\/\//, "");
-                
-                window.location.href = 'intent://' + targetUrl + '#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end';
-            }
-        } else if (isAlreadyOpened || !isTikTok) {
-            // 2. すでにブラウザで開いている、またはTikTok以外（Safari/Chrome）なら案内を隠す
-            document.getElementById('guide-overlay').style.display = 'none';
-        }
-    </script>
 </body>
 </html>
