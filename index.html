@@ -6,11 +6,11 @@
     <title>LINE案内</title>
     <style>
         body { font-family: sans-serif; text-align: center; padding: 50px 20px; background: #ffffff; color: #333; margin: 0; }
-        .btn { display: inline-block; padding: 18px 40px; background: #06C755; color: white; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 20px; margin-top: 20px; box-shadow: 0 4px 15px rgba(6,199,85,0.3); }
+        .btn { display: inline-block; padding: 18px 40px; background: #06C755; color: white; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 20px; margin-top: 20px; }
         
-        /* 案内用オーバーレイ */
+        /* 案内用オーバーレイ（最初から display: block にしておく） */
         #guide-overlay { 
-            display: none; 
+            display: block; 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.95); color: white; z-index: 1000; 
             padding-top: 80px; box-sizing: border-box;
@@ -19,6 +19,9 @@
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         .instruction { font-size: 18px; line-height: 1.6; padding: 0 20px; }
         .highlight { color: #ffeb3b; font-weight: bold; font-size: 22px; }
+        
+        /* 閉じるボタン（Safari/Chromeで開いた人用） */
+        .close-btn { margin-top: 30px; color: #aaa; text-decoration: underline; font-size: 14px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -32,41 +35,24 @@
         <div class="arrow">↗︎</div>
         <div class="instruction">
             <p class="highlight">【重要】</p>
-            <p>このままではLINE登録ができません。</p>
+            <p>TikTok内ではLINE登録ができません。</p>
             <p>右上の<span class="highlight">「...」</span>をタップして<br>
                <span class="highlight">「ブラウザで開く」</span><br>
                を選択してください。
             </p>
-            <p style="font-size: 14px; margin-top: 30px; color: #aaa;">※ブラウザに切り替わると<br>正常に登録ボタンが動きます。</p>
+            <div class="close-btn" onclick="document.getElementById('guide-overlay').style.display='none'">
+                すでにブラウザで開いている方はこちら
+            </div>
         </div>
     </div>
 
     <script>
-        function checkAndShow() {
-            const ua = navigator.userAgent.toLowerCase();
-            
-            // 判定ロジックを大幅強化
-            const isTikTok = ua.indexOf('tiktok') !== -1 || ua.indexOf('tt-jp') !== -1;
-            const isAndroid = ua.indexOf('android') !== -1;
-            
-            // iPhoneの場合、Safari以外の「アプリ内ブラウザ」を広く検知する
-            const isIosApp = (ua.indexOf('iphone') !== -1 || ua.indexOf('ipad') !== -1) && 
-                             (ua.indexOf('safari') === -1 || ua.indexOf('lkbe') !== -1);
-
-            if (isTikTok || isIosApp) {
-                // 案内を表示
-                document.getElementById('guide-overlay').style.display = 'block';
-
-                // Androidなら自動遷移も試みる
-                if (isAndroid) {
-                    const targetUrl = window.location.href.replace(/https?:\/\//, "");
-                    window.location.href = 'intent://' + targetUrl + '#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end';
-                }
-            }
+        // Androidなら自動遷移だけ試みる（失敗しても案内は出たまま）
+        const ua = navigator.userAgent.toLowerCase();
+        if (ua.indexOf('android') !== -1) {
+            const targetUrl = window.location.href.replace(/https?:\/\//, "");
+            window.location.href = 'intent://' + targetUrl + '#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end';
         }
-
-        // ページ読み込み時に実行
-        window.onload = checkAndShow;
     </script>
 </body>
 </html>
