@@ -7,7 +7,8 @@
     <style>
         body { font-family: sans-serif; text-align: center; padding: 50px 20px; background: #ffffff; color: #333; }
         .btn { display: inline-block; padding: 18px 40px; background: #06C755; color: white; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 20px; margin-top: 20px; }
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); color: white; z-index: 1000; padding-top: 100px; }
+        /* iPhone向けの案内画面（オーバーレイ） */
+        #iphone-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); color: white; z-index: 1000; padding-top: 100px; }
         .arrow { font-size: 60px; position: absolute; top: 10px; right: 20px; }
     </style>
 </head>
@@ -16,19 +17,30 @@
     <h2>公式LINE友だち追加</h2>
     <p>下のボタンをタップして登録してください</p>
     
-    <a href="https://ialoop.net/lineadd?ap=pnHlt5proV"btn">LINEで友だち追加</a>
+    <a href="https://ialoop.net/lineadd?ap=pnHlt5proV" class="btn">LINEで友だち追加</a>
 
-    <div id="overlay">
+    <div id="iphone-overlay">
         <div class="arrow">↗︎</div>
-        <h3>【重要】</h3>
+        <h3>【iPhoneをご利用の方】</h3>
         <p>右上の「...」をタップして<br><strong>「ブラウザで開く」</strong>を<br>選択してください</p>
-        <p>（SafariやChromeで開くと登録できます）</p>
+        <p style="font-size: 0.9em; color: #ccc;">（Safariで開くと登録ボタンが動きます）</p>
     </div>
 
     <script>
         const ua = navigator.userAgent.toLowerCase();
-        if (ua.indexOf('tiktok') !== -1) {
-            document.getElementById('overlay').style.display = 'block';
+        const isTikTok = ua.indexOf('tiktok') !== -1;
+        const isAndroid = ua.indexOf('android') !== -1;
+        const isIphone = ua.indexOf('iphone') !== -1 || ua.indexOf('ipad') !== -1;
+
+        if (isTikTok) {
+            if (isAndroid) {
+                // Androidの場合：Intentを使ってChromeを強制起動させる
+                // 現在のページのURLをChromeで開き直す命令
+                window.location.href = 'intent://' + window.location.host + window.location.pathname + '#Intent;scheme=https;package=com.android.chrome;end';
+            } else if (isIphone) {
+                // iPhoneの場合：右上の「...」から開くように案内を出す
+                document.getElementById('iphone-overlay').style.display = 'block';
+            }
         }
     </script>
 </body>
